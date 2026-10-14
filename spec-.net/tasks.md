@@ -21,7 +21,7 @@ Cada tarea termina cuando su **evidencia** existe y se puede ejecutar (artículo
 | T-15 | Adaptador de portadas (disco) | T-08 | Subir PNG de 2 MB ok; 3 MB → 422; sin portada → `cover_key` nulo |
 | T-16 | Adaptador HTTP: rutas de [`api-contract.md`](api-contract.md), cuerpo de error único, autorización por rol | T-10, T-11, T-14, T-15 | Prueba de contrato recorre todas las rutas y todos los códigos de §2 |
 | T-17 | Composición y arranque (admin inicial desde entorno) | T-16 | El sistema arranca con la base vacía y se puede iniciar sesión como admin |
-| T-18 | Bajar a la base las invariantes **solo dominio**: `ck_book_total_positive`, `ck_user_role` | T-12 | Un `INSERT` por `psql` que las viole falla; `data-model.md` §4 se actualiza |
+| T-18 | Verificar en PostgreSQL las restricciones de integridad del modelo | T-12 | `INSERT` que viole `ck_book_total_positive`, `ck_user_role`, `ck_book_isbn_digits` o `ck_loan_item_isbn_digits` falla; `data-model.md` §4 coincide con el esquema |
 | T-19 | Pruebas de arquitectura (artículos I, II y III) | T-17 | NetArchTest pasa y falla si se introduce una importación prohibida |
 | T-20 | `infra`: `docker compose up` levanta motor vacío, API y frontend | T-17 | Un comando; la base arranca sin tablas hasta correr las migraciones |
 | T-21 | `tool`: sembrador de demostración **por la API** (≥ 40 libros, 10 socios, 15 préstamos, 3 vencidos) | T-17 | Tras correrlo, `/loans/overdue` devuelve 3 líneas y el reporte tiene filas |

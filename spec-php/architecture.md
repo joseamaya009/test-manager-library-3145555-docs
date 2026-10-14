@@ -51,7 +51,7 @@ El registro de dependencias se centraliza en el arranque/composición del backen
 
 | Raíz | Contiene | Invariantes que defiende |
 |---|---|---|
-| `Book` | `Isbn`, copias totales y disponibles, baja lógica | disponibles entre 0 y total; total ≥ 1; título no vacío |
+| `Book` | `Isbn`, copias totales y disponibles, baja lógica; testigo persistente `row_version` | disponibles entre 0 y total; total ≥ 1; título no vacío |
 | `Loan` | colección de `LoanItem` | 1 a 3 líneas; sin libro repetido; vencimiento a 14 días; inmutable salvo devolución |
 | `Member` | nombre y documento | documento obligatorio y único |
 | `User` | nombre, rol y hash | nombre normalizado; rol en (`admin`, `librarian`) |

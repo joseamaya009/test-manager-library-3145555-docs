@@ -8,8 +8,8 @@ Traducción técnica de [`spec.md`](spec.md) y [`constitution.md`](constitution.
 |---|---|---|---|
 | D-01 | Lenguaje y runtime | PHP con Laravel | Stack confirmado; versiones de PHP y Laravel pendientes |
 | D-02 | HTTP | Laravel implementa el adaptador de entrada | Framework confirmado; estilo de rutas/controladores no especificado |
-| D-03 | Persistencia | PostgreSQL 16; todo el DDL pertenece a migraciones de `api` | Motor y propiedad definidos por las fuentes; ORM/mecanismo concreto de migración por validar |
-| D-04 | Concurrencia | Testigo de versión por libro más `CHECK` de rango, según [ADR-002](adr/adr-002-concurrencia-optimista.md) | Decisión heredada; el testigo no figura en [`data-model.md`](data-model.md), así que el modelo debe resolverse antes de implementar |
+| D-03 | Persistencia | PostgreSQL 16; changelogs Liquibase versionados en `api/database`; todo el DDL pertenece a `api` | Motor y propiedad definidos por las fuentes; Liquibase sigue el ejemplo indicado. El ORM de consultas de Laravel queda pendiente |
+| D-04 | Concurrencia | `book.row_version`, incremento condicional y `CHECK` de rango, según [ADR-002](adr/adr-002-concurrencia-optimista.md) | Modelo y paquete inicial de base alineados; falta aplicar la operación condicional en el adaptador de persistencia |
 | D-05 | Fechas | Instantes UTC (`timestamptz`); la aplicación consume un puerto `Clock` | Compartido con las referencias; permite probar vencimientos sin esperar 14 días |
 | D-06 | Reporte | Una consulta agregada de lectura, agrupada por valores congelados | Definido en [ADR-004](adr/adr-004-reporte-agregado-y-congelado.md) |
 | D-07 | Objetos de valor | `Isbn`, `Quantity`, `DocumentNumber`, `DateRange`; sin tabla propia | Heredado del plan de referencia; `DocumentNumber` y sus validaciones requieren completar el modelo/tareas |
@@ -44,15 +44,15 @@ Los nombres de la columna izquierda se heredan de los planes Python y .NET como 
 
 ## 4. Orden de construcción
 
-Esqueleto y salud → migraciones iniciales y categorías → dominio → casos de uso con fakes → adaptadores de persistencia, seguridad y portadas → rutas Laravel y contrato HTTP → composición y administrador inicial → pruebas de integración, contrato y concurrencia.
+Esqueleto y salud → Liquibase y categorías → dominio → casos de uso con fakes → adaptadores de persistencia, seguridad y portadas → rutas Laravel y contrato HTTP → composición y administrador inicial → integración del arranque con Liquibase → pruebas de contrato y concurrencia.
 
-El detalle y la evidencia están en [`tasks.md`](tasks.md). Antes de cerrar la tarea de esquema inicial, resuelve el testigo de concurrencia que falta en el modelo. Antes de cerrar la autenticación, valida la selección de hash y la librería JWT.
+El detalle y la evidencia están en [`tasks.md`](tasks.md). Antes de cerrar la autenticación, valida la selección de hash y la librería JWT.
 
 ## 5. Decisiones que bloquean una especificación técnica cerrada
 
 1. Versiones compatibles de PHP y Laravel para el entorno de evaluación.
-2. ORM y mecanismo de migraciones concretos, conservando la propiedad del esquema en `api`.
-3. Campo/estrategia de testigo de concurrencia coherente entre ADR-002 y el modelo físico.
-4. Algoritmo de hash de contraseñas y librería JWT.
-5. Runner de pruebas y mecanismo automatizado para verificar dependencias.
-6. Mapeo de configuración, almacenamiento de portadas, migraciones y creación del admin para un arranque reproducible.
+2. ORM que usará Laravel para consultas de negocio.
+3. Algoritmo de hash de contraseñas y librería JWT.
+4. Runner de pruebas y mecanismo automatizado para verificar dependencias.
+5. Mapeo de configuración y almacenamiento de portadas.
+6. Arranque reproducible que coordine base vacía, `liquibase update` y creación del admin.

@@ -5,7 +5,7 @@ Cada tarea termina cuando existe la evidencia indicada (artículo XII). Estado i
 | # | Tarea | Depende de | Evidencia |
 |---|---|---|---|
 | T-01 | Esqueleto Laravel y `GET /health` | — | `GET /health` responde `{"status":"ok"}`; el contenedor arranca con un comando |
-| T-02 | Migración inicial: seis tablas, FK, índices únicos y las cinco categorías sembradas | T-01 | Las consultas de [`data-model.md` §10](data-model.md) devuelven lo documentado; ninguna columna tiene `DEFAULT` |
+| T-02 | Changelog Liquibase inicial: seis tablas, FK, índices y cinco categorías | T-01 | Las consultas de [`data-model.md` §10](data-model.md) devuelven lo documentado; ninguna columna tiene `DEFAULT` |
 | T-03 | Dominio: `Isbn`, `Quantity`, `DateRange` (objetos de valor) | T-01 | Pruebas unitarias: ISBN de 13 dígitos, cantidad > 0, fin ≥ inicio. Resolver si `DocumentNumber` también requiere objeto de valor |
 | T-04 | Dominio: `Book` (retirar, reponer, baja lógica) | T-03 | Pruebas: disponibles nunca < 0 ni > total |
 | T-05 | Dominio: `Loan` (añadir/devolver línea, estado calculado, 14 días, máximo 3) | T-04 | Pruebas con reloj falso: `open`, `overdue`, `closed` |
@@ -21,7 +21,7 @@ Cada tarea termina cuando existe la evidencia indicada (artículo XII). Estado i
 | T-15 | Adaptador de portadas en disco | T-08 | Subir PNG de 2 MB funciona; 3 MB da 422; sin portada `cover_key` queda nulo |
 | T-16 | Adaptador HTTP Laravel: rutas de [`api-contract.md`](api-contract.md), cuerpo único de error y autorización por rol | T-10, T-11, T-14, T-15 | Pruebas de contrato recorren las rutas y códigos de [`api-contract.md` §2](api-contract.md) |
 | T-17 | Composición y arranque; crear admin inicial desde entorno | T-16 | Arrancar según la secuencia documentada e iniciar sesión como admin |
-| T-18 | Añadir a la base las invariantes marcadas **pendiente (T-18)** | T-12 | Un `INSERT` directo que viole `ck_book_total_positive` o `ck_user_role` falla; actualizar las marcas de `data-model.md` |
+| T-18 | Verificar en PostgreSQL las restricciones de integridad del modelo | T-12 | `INSERT` que viole `ck_book_total_positive`, `ck_user_role`, `ck_book_isbn_digits` o `ck_loan_item_isbn_digits` falla; `data-model.md` §4 coincide con el esquema |
 | T-19 | Comprobaciones automatizadas de arquitectura (artículos I, II y III) | T-17 | La verificación elegida para PHP pasa y falla ante una dependencia prohibida |
 | T-20 | `infra`: `docker compose up` levanta motor vacío, API y frontend | T-17 | Un comando; documentar explícitamente cuándo se ejecutan las migraciones y cuándo deja de estar vacía la base |
 | T-21 | `tool`: sembrador de demostración **por la API** (≥ 40 libros, 10 socios, 15 préstamos, 3 vencidos) | T-17 | Tras correrlo, `/loans/overdue` devuelve 3 líneas y el reporte tiene filas |

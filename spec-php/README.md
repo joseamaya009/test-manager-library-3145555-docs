@@ -21,9 +21,9 @@
 
 ## Qué no se decide aquí
 
-Las referencias discrepan en el algoritmo de hash (Argon2id frente a BCrypt), y no fijan para Laravel la versión de PHP/Laravel, el mecanismo concreto de persistencia, la librería JWT, las herramientas de pruebas ni la organización exacta del contenedor de dependencias. [`plan.md`](plan.md) registra estas decisiones sin presentarlas como hechos.
+Las referencias discrepan en el algoritmo de hash (Argon2id frente a BCrypt), y no fijan para Laravel la versión de PHP/Laravel, el ORM de consultas, la librería JWT, las herramientas de pruebas ni la organización exacta del contenedor de dependencias. La estructura de migraciones Liquibase queda en `api/database`, siguiendo el ejemplo indicado y la propiedad del esquema asignada a `api`. [`plan.md`](plan.md) registra las decisiones pendientes sin presentarlas como hechos.
 
-También se conservan asuntos abiertos heredados de las referencias: el testigo de concurrencia de [ADR-002](adr/adr-002-concurrencia-optimista.md) no aparece como columna en el modelo físico; `DocumentNumber` se menciona como objeto de valor en los planes pero no está especificado con ese detalle en el modelo; y la secuencia entre arranque, migraciones, base vacía y creación del administrador debe quedar reproducible. Resolverlos requiere actualizar las fuentes correspondientes antes de implementar.
+También se conservan asuntos abiertos heredados de las referencias: `DocumentNumber` se menciona como objeto de valor en los planes pero no está especificado con ese detalle en el modelo; y la secuencia entre arranque, Liquibase, base vacía y creación del administrador debe quedar reproducible. El testigo `book.row_version` ya está incluido en el modelo y la migración; falta conectarlo al adaptador de persistencia.
 
 ## Fuentes
 

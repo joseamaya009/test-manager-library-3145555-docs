@@ -34,7 +34,7 @@ Los puertos se conectan con sus adaptadores en un único lugar de composición. 
 
 ## Artículo V — El esquema es propiedad de las migraciones de `api`
 
-`infra` levanta un motor vacío. Todo el DDL —tablas, índices, restricciones y semilla de categorías— vive en las migraciones mantenidas por `api`. Laravel se usa como framework del backend; el mecanismo concreto de migraciones debe seguir esta propiedad. Ver [ADR-001](adr/adr-001-propiedad-del-esquema.md).
+`infra` levanta un motor vacío. Todo el DDL —tablas, índices, restricciones y semilla de categorías— vive en los changelogs Liquibase mantenidos por `api/database`. Laravel se usa como framework del backend; que la API coordine la aplicación de changelogs no cambia la propiedad del esquema. Ver [ADR-001](adr/adr-001-propiedad-del-esquema.md).
 
 **Verificación:** `infra` no crea tablas y las consultas de [`data-model.md` §10](data-model.md) coinciden con las migraciones.
 
