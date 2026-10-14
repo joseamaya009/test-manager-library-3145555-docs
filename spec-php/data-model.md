@@ -29,6 +29,7 @@ Cada regla lleva una de **tres marcas**: **motor** (la impone la base), **solo d
 | **Libro** | Título del catálogo, con autor, ISBN, categoría, ejemplares y portada opcional | `book` |
 | **Categoría** | Clasificación fija de cinco, sembrada, sin mantenimiento | `category` |
 | **Ejemplar** | Copia física de un libro. Se cuenta, no se identifica | `book.total_copies`, `book.available_copies` |
+| **Testigo de versión** | Contador que detecta una actualización concurrente del libro | `book.row_version` |
 | **Socio** | Persona que pide prestado. No inicia sesión | `member` |
 | **Préstamo** | Hecho consumado: quién lo pidió, quién lo registró y cuándo | `loan` |
 | **Línea de préstamo** | Un libro dentro de un préstamo, con su vencimiento y su devolución | `loan_item` |
@@ -65,7 +66,7 @@ Ninguna columna lleva `DEFAULT`: los valores los pone el dominio.
 | Columna | Tipo | Nulable | Nota |
 |---|---|---|---|
 | `id` | `uuid` | no | PK |
-| `title` | `varchar(250)` | no | Recortado por el dominio |
+| `title` | `varchar(250)` | no | No vacío y recortado por dominio y base |
 | `author` | `varchar(200)` | no | |
 | `isbn` | `char(13)` | no | Solo dígitos. Único entre libros activos (índice parcial) |
 | `category_id` | `uuid` | no | FK restrictiva a `category` |
@@ -73,13 +74,14 @@ Ninguna columna lleva `DEFAULT`: los valores los pone el dominio.
 | `available_copies` | `integer` | no | Entre 0 y `total_copies` |
 | `cover_key` | `varchar(512)` | **sí** | Clave opaca; nunca ruta ni bytes; nunca cadena vacía |
 | `deleted_at` | `timestamptz` | sí | Baja lógica. Nula = activo |
+| `row_version` | `integer` | no | Testigo de concurrencia optimista; la aplicación inicia en 0 y lo incrementa en cada actualización |
 
 **`member`**
 
 | Columna | Tipo | Nulable | Nota |
 |---|---|---|---|
 | `id` | `uuid` | no | PK |
-| `full_name` | `varchar(200)` | no | |
+| `full_name` | `varchar(200)` | no | No vacío y recortado |
 | `document_number` | `varchar(30)` | no | Único |
 
 **`loan`**
@@ -99,7 +101,7 @@ Ninguna columna lleva `DEFAULT`: los valores los pone el dominio.
 | `loan_id` | `uuid` | no | FK con `ON DELETE CASCADE` |
 | `book_id` | `uuid` | no | FK restrictiva a `book` |
 | `book_title` | `varchar(250)` | no | Congelado; mismo ancho que `book.title` |
-| `isbn` | `char(13)` | no | Congelado |
+| `isbn` | `char(13)` | no | Solo dígitos; congelado |
 | `category_name` | `varchar(120)` | no | Congelado; **sin FK a propósito** |
 | `due_at` | `timestamptz` | no | `loaned_at` + 14 días, calculado por el dominio |
 | `returned_at` | `timestamptz` | **sí** | Nula mientras no se devuelve |
@@ -122,25 +124,33 @@ porque ningún requisito las pide.
 |---|---|---|
 | Claves primarias de las seis tablas | `PK_*` | **motor** |
 | `category.name` único | índice único | **motor** |
+| `category.name` recortado y no vacío | `ck_category_name_nonempty` | **motor** |
 | `member.document_number` único | índice único | **motor** |
+| `member.full_name` recortado y no vacío | `ck_member_full_name_nonempty` | **motor** |
 | `user.username` único | índice único | **motor** |
+| `user.username` en minúsculas y recortado | `ck_user_username_normalized` | **motor** |
+| `user.role` en (`admin`,`librarian`) | `ck_user_role` | **motor** |
 | `isbn` único entre activos | índice único parcial `WHERE deleted_at IS NULL` | **motor** |
+| ISBN con exactamente 13 dígitos | `ck_book_isbn_digits` | **motor** |
+| ISBN congelado con exactamente 13 dígitos | `ck_loan_item_isbn_digits` | **motor** |
+| Título recortado y no vacío | `ck_book_title_nonempty` | **motor** |
+| Portada nula o clave recortada no vacía | `ck_book_cover_key_nonempty` | **motor** |
 | `book.category_id` → `category.id` RESTRICT | FK | **motor** |
 | `loan.member_id` → `member.id` RESTRICT | FK | **motor** |
 | `loan.loaned_by_user_id` → `user.id` RESTRICT | FK | **motor** |
 | `loan_item.loan_id` → `loan.id` CASCADE | FK | **motor** |
 | `loan_item.book_id` → `book.id` RESTRICT | FK | **motor** |
 | `0 <= available_copies <= total_copies` | `ck_book_available_range` | **motor** — última barrera de concurrencia |
-| `total_copies >= 1` | `ck_book_total_positive` | **pendiente (T-18)** · hoy solo dominio |
+| `total_copies >= 1` | `ck_book_total_positive` | **motor** |
+| `row_version >= 0` | `ck_book_row_version_nonnegative` | **motor** |
 | Único `(loan_id, book_id)` | índice único | **motor** |
-| `role` en (`admin`,`librarian`) | `ck_user_role` | **pendiente (T-18)** · hoy solo dominio |
 | Máximo 3 sin devolver por socio | — | **solo dominio** (no expresable en un `CHECK`) |
 | Socio con vencidos no pide | — | **solo dominio** |
 | Descontar ejemplar y crear línea son una operación | — | **solo dominio** (una transacción) |
 | Un préstamo tiene 1 a 3 líneas | — | **solo dominio** |
 | Préstamos y devoluciones inmutables salvo `returned_at` | — | **solo dominio** (por ausencia de operación) |
 
-Índices de acceso: `book (category_id, title)` parcial sobre activos; `loan (loaned_at)`; `loan_item (book_id)`;
+Índices de acceso: `book (category_id, title)` parcial sobre activos; `member (full_name)`; `loan (loaned_at)` y `(member_id, loaned_at)`; `loan_item (book_id)`;
 `loan_item (due_at) WHERE returned_at IS NULL` para vencidos.
 
 ## 5. Política de claves foráneas
