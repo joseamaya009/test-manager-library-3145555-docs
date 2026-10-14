@@ -8,7 +8,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 | Tema | Regla |
 |---|---|
 | Base | `/api/v1` |
-| Formato | JSON, UTF-8. Nombres de campo en `snake_case` |
+| Formato | Cuerpos JSON en UTF-8 y nombres de campo en `snake_case`, salvo las cargas `multipart/form-data` y las respuestas binarias indicadas en los endpoints de portada |
 | Identificadores | UUID v4 como texto |
 | Fechas | ISO 8601 en UTC, con `Z` (`2026-10-14T14:15:00Z`) |
 | Dinero | No hay. El sistema no maneja importes |
@@ -105,6 +105,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 | PUT | `/books/{id}` | admin | Reemplaza título, autor, categoría y total |
 | DELETE | `/books/{id}` | admin | Baja lógica |
 | PUT | `/books/{id}/cover` | admin | Sube portada (`multipart/form-data`, campo `file`) |
+| GET | `/books/{id}/cover` | autenticado | Devuelve el binario de la portada o 404 |
 | DELETE | `/books/{id}/cover` | admin | Quita la portada |
 
 Libro (respuesta):
@@ -118,7 +119,7 @@ Libro (respuesta):
 ```
 
 `POST /books` (petición): `title`, `author`, `isbn`, `category_id`, `total_copies`. Los disponibles los calcula el servidor.
-`cover_key` es una clave opaca: para pintar la portada se usa `GET /books/{id}/cover`, que devuelve el binario o 404.
+`cover_key` es una clave opaca: para pintar la portada se usa `GET /books/{id}/cover`, que devuelve el binario o 404. Como todos los endpoints salvo `POST /auth/login` y `GET /health` requieren token, esta descarga requiere autenticación.
 
 ### 3.5 Socios
 

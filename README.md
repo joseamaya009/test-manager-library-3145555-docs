@@ -3,7 +3,7 @@
 > **Prueba técnica · Ficha ADSO 3145555**
 > Horario: **miércoles 14 de octubre de 2026, de 6:50 a. m. a 11:00 a. m.** (hora Colombia). Entrega a las **11:00 a. m.**
 
-Este repositorio contiene el **spec** de *Manager Library*. Es el único con contenido: los otros cinco empiezan vacíos.
+Este repositorio contiene el **spec** de *Manager Library*. Los otros cinco repositorios incluyen un README inicial, pero no traen implementación: se construyen en el fork de cada aprendiz.
 
 ## Instrucciones
 
@@ -12,12 +12,13 @@ con el spec planteado**.
 
 1. Hacer fork, a su cuenta de GitHub, de cada repositorio de la tabla del final.
 2. Leer el spec en [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs).
-   Se entrega en dos versiones: `spec-python/` y `spec-.net/`.
+   Incluye dos referencias técnicas (`spec-python/` y `spec-.net/`) y una traducción de trabajo
+   para el stack del reto (`spec-php/`).
 3. Desarrollar en los forks.
 
 ## El reto se desarrolla con React y PHP (Laravel)
 
-El spec está escrito para Python y para .NET, pero el reto **no** se hace en esos lenguajes:
+Las referencias técnicas están escritas para Python y .NET; el reto **no** se hace en esos lenguajes:
 
 | Capa | Tecnología del reto |
 |---|---|
@@ -44,13 +45,14 @@ No hay prórroga: suban avances parciales con commits pequeños durante la prueb
 |---|---|
 | [`spec-python/`](spec-python/) | El spec de Manager Library escrito para un backend Python |
 | [`spec-.net/`](spec-.net/) | El mismo sistema especificado para un backend .NET |
+| [`spec-php/`](spec-php/) | Especificación funcional compartida y traducción técnica propuesta para PHP/Laravel; distingue decisiones confirmadas y pendientes |
 
-Las dos versiones describen el **mismo producto** (las mismas historias, reglas de negocio y
-endpoints); cambian las decisiones de tecnología. Ninguna de las dos es el stack del reto.
+Las tres carpetas describen el **mismo producto** (las mismas historias, reglas de negocio y
+endpoints). Python y .NET son referencias; `spec-php/` adapta las decisiones técnicas al stack del reto.
 
 ## Cómo se lee el spec
 
-En cualquiera de las dos carpetas, en este orden:
+En cualquiera de las tres carpetas, en este orden:
 
 1. `constitution.md` — principios innegociables.
 2. `spec.md` — qué debe hacer el sistema: actores, historias, criterios de aceptación, reglas de negocio.
@@ -63,7 +65,7 @@ En cualquiera de las dos carpetas, en este orden:
 
 | Repositorio | Qué va ahí |
 |---|---|
-| [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs) | El spec: `spec-python/` y `spec-.net/` |
+| [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs) | El spec: referencias `spec-python/`, `spec-.net/` y traducción `spec-php/` |
 | [`test-manager-library-3145555-api`](https://github.com/code-sena/test-manager-library-3145555-api) | Backend en PHP (Laravel) |
 | [`test-manager-library-3145555-app`](https://github.com/code-sena/test-manager-library-3145555-app) | Frontend en React |
 | [`test-manager-library-3145555-page`](https://github.com/code-sena/test-manager-library-3145555-page) | Sitio público estático de presentación |
